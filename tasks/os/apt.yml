@@ -1,0 +1,9 @@
+---
+# apt related tasks
+
+- name: Install additional packages.
+  ansible.builtin.apt:
+    name:
+      - curl
+      - sudo
+    state: latest

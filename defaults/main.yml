@@ -1,0 +1,25 @@
+---
+# defaults file for new_server
+# Actual parameter for ansible session
+ansible_user: root
+ansible_ssh_pass: password
+ansible_ssh_port: 22
+
+#Parameter after the playbook.
+ansible_default_user: user-ansible
+ansible_default_password: "{{ lookup('password', '{{ credential_store }}/{{ ansible_default_user }}.{{ inventory_hostname }}_secret chars=ascii_letters,digits length=32') | password_hash('sha512') }}"
+root_default_user: 'root'
+root_default_password: "{{ lookup('password', '{{ credential_store }}/{{ root_default_user }}.{{ inventory_hostname }}_secret chars=ascii_letters,digits length=32') | password_hash('sha512') }}"
+sudo_group: sudo
+git_url: "https://git.{{ domain }}/repo"
+git_public_path: "Public/"
+free_user: ''
+free_passwd: ''
+
+ssh_port:       "22"
+ssh_listen_ip:  "0.0.0.0"
+ssh_listen_ip6: "::"
+ssh_chiphers:   "chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com"
+ssh_kex:        "curve25519-sha256@libssh.org"
+ssh_macs:       "hmac-sha2-512-etm@openssh.com"
+ssh_root_login: "prohibit-password"

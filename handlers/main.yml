@@ -1,0 +1,7 @@
+---
+# handlers file for new_server
+
+- name: restart ssh
+  ansible.builtin.systemd:
+    name: sshd
+    state: restarted

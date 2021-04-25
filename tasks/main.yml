@@ -1,0 +1,87 @@
+---
+# tasks file to setup new server
+
+- name: Include os specific tasks.
+  ansible.buitin.include_tasks: "os/{{ ansible_pkg_mgr }}.yml"
+
+- name: Rename the server.
+  ansible.buitin.hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Copy the defaults files to skel.
+  ansible.buitin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/skel/.{{ item }}"
+    owner: root
+    group: root
+    mode:  0644
+  loop:
+    - 'bashrc'
+    - 'profile'
+
+- name: Remplace the skel file for root.
+  ansible.buitin.template:
+    src: "{{ item }}.j2"
+    dest: "/root/.{{ item }}"
+    owner: root
+    group: root
+    mode:  0644
+  loop:
+    - 'bashrc'
+    - 'profile'
+
+- name: Create default user for ansible.
+  ansible.buitin.user:
+    name: "{{ ansible_default_user }}"
+    shell: /usr/bin/bash
+    system: false
+    password: "{{ ansible_default_password }}"
+    update_password: on_create
+    state: present
+
+- name: "Permit SUDO without password for {{ ansible_default_user }}"
+  ansible.buitin.template:
+    src: sudoers.j2
+    dest: /etc/sudoers
+    owner: root
+    group: root
+    mode:  0440
+
+- name: "Change the host files"
+  ansible.buitin.template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode:  0644
+
+- name: "Add ssh public key to {{ ansible_default_user }}."
+  ansible.posix.authorized_key:
+    user: "{{ ansible_default_user }}"
+    state: present
+    key: '{{ ansible_default_user_ssh_key }}'
+
+- name: Enforce the security of ssh server.
+  ansible.buitin.template:
+    src: "sshd_config.j2"
+    dest: "/etc/ssh/sshd_config"
+    owner: root
+    group: root
+    mode:  0640
+    validate: '/sbin/sshd -t -f %s'
+  notify: restart ssh
+
+- name: Enforce the security of ssh client.
+  ansible.buitin.template:
+    src: "ssh_config.j2"
+    dest: "/etc/ssh/ssh_config"
+    owner: root
+    group: root
+    mode:  0640
+
+- name: Change Root password.
+  ansible.buitin.user:
+    name: "root"
+    password: "{{ root_default_password }}"
+    update_password: always
+    state: present

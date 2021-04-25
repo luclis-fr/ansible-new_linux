@@ -1,0 +1,5 @@
+---
+# vars file for new_server
+
+#ansible_default_user_ssh_key: "{{ git_url }}{{ git_public_path }}{{ ansible_default_user }}@{{ inventory_hostname }}.pub"
+ansible_default_user_ssh_key: "{{ lookup('file','/home/user-ansible/.ssh/{{ ansible_default_user }}@{{ inventory_hostname }}.pub') }}"

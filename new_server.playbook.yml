@@ -1,0 +1,9 @@
+#!/usr/bin/env ansible-playbook
+
+- name: Configure the new server.
+  hosts: new_server
+  gather_facts: true
+  user: root
+
+  roles:
+    - new_server

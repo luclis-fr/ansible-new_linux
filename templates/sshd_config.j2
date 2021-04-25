@@ -1,0 +1,100 @@
+#       $OpenBSD: sshd_config,v 1.100 2016/08/15 12:32:04 naddy Exp $
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+# SSH server configuration
+Protocol 2
+Port {{ ssh_port }}
+#AddressFamily any
+ListenAddress {{ ssh_listen_ip }}
+ListenAddress {{ ssh_listen_ip6 }}
+
+# Key and security options
+HostKey /etc/ssh/ssh_host_ed25519_key
+Ciphers {{ ssh_chiphers }}
+KexAlgorithms {{ ssh_kex }}
+Macs {{ ssh_macs }}
+RekeyLimit default 3600 #Renegocie la cle quand elle a transmis sa taille maximum OU au bout d'une heure.
+#UsePrivilegeSeparation sandbox
+
+# Logging
+#SyslogFacility AUTH
+#LogLevel INFO
+#PrintLastLog yes
+#PrintMotd no
+#TCPKeepAlive yes
+
+# Authentication:
+
+LoginGraceTime 30
+MaxAuthTries 2
+PermitRootLogin {{ ssh_root_login }}
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+#PasswordAuthentication no
+#StrictModes yes
+#MaxSessions 10
+
+#PubkeyAuthentication yes
+AuthorizedKeysFile      .ssh/authorized_keys
+#AuthorizedKeysFile %h/.ssh/authorized_keys
+
+#AuthorizedPrincipalsFile none
+#AuthorizedKeysCommand none
+#AuthorizedKeysCommandUser nobody
+
+#IgnoreRhosts yes
+#RhostsRSAAuthentication no
+#HostbasedAuthentication no
+#IgnoreUserKnownHosts no
+
+# Kerberos options
+#KerberosAuthentication yes
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+#KerberosGetAFSToken no
+
+# GSSAPI options
+#GSSAPIAuthentication yes
+#GSSAPICleanupCredentials yes
+#GSSAPIStrictAcceptorCheck yes
+#GSSAPIKeyExchange no
+
+UsePAM yes
+
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
+#GatewayPorts no
+#X11Forwarding no
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+#PermitTTY yes
+#UseLogin no
+#PermitUserEnvironment no
+#Compression delayed
+#ClientAliveInterval 0
+#ClientAliveCountMax 3
+#UseDNS no
+#PidFile /var/run/sshd.pid
+#MaxStartups 10:30:60
+#PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+# no default banner path
+#Banner none
+
+# Allow client to pass locale environment variables
+AcceptEnv OPENSSL_CONF
+AcceptEnv LANG LC_*
+
+# override default of no subsystems
+Subsystem       sftp    /usr/lib/openssh/sftp-server
